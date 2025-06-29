@@ -1,0 +1,57 @@
+@use "bootstrap/scss/bootstrap";
+
+.form-label {
+    font-size: 0.9rem;
+}
+
+h5 {
+    font-size: 1.1rem;
+}
+
+p,
+small,
+label {
+    font-size: 0.9rem;
+}
+
+.file-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #f8f9fa;
+    padding: 6px 10px;
+    border-radius: 5px;
+    margin-bottom: 5px;
+    font-size: 0.9rem;
+}
+
+.file-name {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    overflow: hidden;
+}
+
+.file-thumb {
+    height: 35px;
+    width: auto;
+    border-radius: 3px;
+}
+
+.file-remove {
+    color: #dc3545;
+    cursor: pointer;
+    font-size: 0.85rem;
+    text-decoration: underline;
+}
+
+.btn-outline-primary-custom {
+    border-color: #0061f2;
+    color: #0061f2;
+    transition: all 0.2s ease;
+}
+
+.btn-outline-primary-custom:hover {
+    background-color: #0061f2;
+    color: #fff;
+}
