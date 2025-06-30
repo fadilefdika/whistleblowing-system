@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Yajra\DataTables\DataTables;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -10,20 +12,66 @@ use App\Models\WhistleblowingReport;
 
 class ReportController extends Controller
 {
+    public function index(){
+        return view('admin.index');
+    }
+
+    public function data()
+    {
+        $query = WhistleblowingReport::query();
+
+        return DataTables::of($query)
+            ->addIndexColumn()
+            ->editColumn('status', function ($report) {
+                $color = match($report->status) {
+                    'Resolved' => 'success',
+                    'In Progress' => 'warning text-dark',
+                    default => 'secondary',
+                };
+                return '<span class="badge bg-' . $color . '">' . $report->status . '</span>';
+            })
+            ->editColumn('created_at', function ($report) {
+                return Carbon::parse($report->created_at)->format('d M Y H:i');
+            })
+            ->addColumn('action', function ($report) {
+                return '<button 
+                            class="btn btn-sm btn-outline-primary view-report-btn" 
+                            data-id="' . $report->id . '">
+                            <i class="fas fa-eye"></i> View
+                        </button>';
+            })                      
+            ->rawColumns(['status', 'action'])
+            ->make(true);
+    }
+
+    public function show($id)
+    {
+        $report = WhistleblowingReport::findOrFail($id);
+        $badgeColor = match($report->status) {
+            'Resolved' => 'success',
+            'In Progress' => 'warning text-dark',
+            default => 'secondary'
+        };
+        
+        return view('admin.partials.detail', compact('report', 'badgeColor'));
+    }
+
+
+
     public function form(){
         return view('whistleblowing');
     }
 
     public function track(Request $request)
-{
-    $report_number = $request->input('report_number');
-    $report = WhistleblowingReport::where('report_number', $report_number)->first();
+    {
+        $report_number = $request->input('report_number');
+        $report = WhistleblowingReport::where('report_number', $report_number)->first();
 
-    return view('track-report', [
-        'report' => $report,
-        'reportSearched' => true
-    ]);
-}
+        return view('track-report', [
+            'report' => $report,
+            'reportSearched' => true
+        ]);
+    }
 
 
     public function store(Request $request)
@@ -37,7 +85,7 @@ class ReportController extends Controller
             'incident_date' => 'required|date',
             'incident_location' => 'required|string|max:255',
             'supporting_document' => 'nullable|array|max:5',
-            'supporting_document.*' => 'file|max:5120',
+            'supporting_document.*' => 'file|max:1024',
             'declaration' => 'required|accepted',
         ]);
 
@@ -76,7 +124,7 @@ class ReportController extends Controller
                 'incident_location' => $request->incident_location,
                 'supporting_document_path' => implode(',', $paths),
                 'declaration_confirmed' => true,
-                'status' => 'Diterima',
+                'status' => 'Received',
                 'status_note' => null,
             ]);
             

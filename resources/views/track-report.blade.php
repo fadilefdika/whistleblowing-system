@@ -1,11 +1,21 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container py-5">
-    <div class="row justify-content-center">
+<div class="container pt-3 pb-4">
+    {{-- Tombol Back --}}
+    <div class="mb-3">
+        <a href="{{ route('landingpage') }}"
+           class="btn btn-outline-primary fw-semibold rounded-2 shadow-sm"
+           style="border-color: #0061f2; color: #0061f2; transition: 0.2s all;"
+           onmouseover="this.style.backgroundColor='#0061f2'; this.style.color='#fff';"
+           onmouseout="this.style.backgroundColor=''; this.style.color='#0061f2';">
+            Back
+        </a>
+    </div>
+    <div class="row justify-content-center"> 
         <div class="col-md-8 col-lg-6">
             <!-- Main Card -->
-            <div class="card border-0 shadow-sm rounded-lg">
+            <div class="card border-0 shadow-lg rounded-lg">
                 <div class="card-body p-4 p-md-5">
                     <!-- Header Section -->
                     <div class="text-center mb-5">
@@ -20,7 +30,7 @@
                     <form action="#" method="GET" class="mt-4">
                         <div class="mb-4">
                             <label for="report_number" class="form-label small text-uppercase text-muted fw-semibold mb-2">Report Reference Number</label>
-                            <div class="input-group shadow-sm rounded">
+                            <div class="input-group shadow-lg rounded">
                                 <span class="input-group-text bg-light border-end-0 text-muted">
                                     <i class="fas fa-hashtag"></i>
                                 </span>
@@ -35,12 +45,12 @@
                         </div>
 
                         <div class="d-grid gap-3 mt-5">
-                            <button type="submit" class="btn btn-primary py-2 fw-semibold rounded shadow-sm">
+                            <button type="submit" class="btn btn-primary py-2 fw-semibold rounded shadow-lg">
                                 <i class="fas fa-search me-2"></i> Check Status
                             </button>
                             
                             <a href="{{ route('whistleblowing.form') }}" 
-                               class="btn btn-outline-primary py-2 fw-semibold rounded shadow-sm hover-effect">
+                               class="btn btn-outline-primary py-2 fw-semibold rounded shadow-lg hover-effect">
                                 <i class="fas fa-plus me-2"></i> Submit New Report
                             </a>
                         </div>
@@ -50,7 +60,7 @@
 
             <!-- Results Section -->
             @if(isset($report))
-                <div class="card border-0 shadow-sm rounded-lg mt-4">
+                <div class="card border-0 shadow-lg rounded-lg mt-4">
                     <div class="card-body p-4">
                         <div class="d-flex align-items-center mb-3">
                             <i class="fas fa-info-circle text-primary me-2 fs-5"></i>
@@ -101,7 +111,7 @@
                     </div>
                 </div>
             @elseif(isset($reportSearched))
-                <div class="alert alert-danger rounded-lg shadow-sm mt-4">
+                <div class="alert alert-danger rounded-lg shadow-lg mt-4">
                     <div class="d-flex align-items-center">
                         <i class="fas fa-times-circle me-2"></i>
                         <span>Report not found. Please check the reference number.</span>

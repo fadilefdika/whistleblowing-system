@@ -13,3 +13,9 @@ Route::get('/whistleblowing/trackresult', [ReportController::class, 'trackresult
 Route::post('/whistleblowing/track', [ReportController::class, 'store'])->name('whistleblowing.submit');
 Route::get('/whistleblowing/success/{report_number}', [ReportController::class, 'success'])->name('whistleblowing.success');
 
+// routes/web.php
+Route::get('/admin/reports', [ReportController::class, 'index'])->name('admin.reports.index');
+Route::get('/admin/reports/data', [ReportController::class, 'data'])->name('admin.reports.data');
+Route::get('/admin/reports/{id}', [ReportController::class, 'show'])->name('admin.reports.show');
+
+

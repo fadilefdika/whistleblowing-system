@@ -40,7 +40,7 @@
                 <!-- Reporter Identity -->
                 <div class="my-4">
                     <h5 class="text-primary border-bottom pb-2">Reporter Identity</h5>
-                    <label for="reporter_type" class="form-label small mb-1">Your role</label>
+                    <label for="reporter_type" class="form-label small mb-1">Your role<span class="text-danger"> *</span></label>
                     <select class="form-select" id="reporter_type" name="reporter_type" required>
                         <option value="" selected disabled>-- Select --</option>
                         <option value="employee">Employee</option>
@@ -52,19 +52,7 @@
                 <div class="mb-4">
                     <h5 class="text-primary border-bottom pb-2">Report Information</h5>
         
-                    <label class="form-label small mb-1">Does this report relate to fraud, legal violation, or ethics violation?</label>
-                    <div class="d-flex gap-3 mb-3">
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="has_violation" id="violation_yes" value="1" required>
-                            <label class="form-check-label" for="violation_yes">Yes</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="has_violation" id="violation_no" value="0">
-                            <label class="form-check-label" for="violation_no">No</label>
-                        </div>
-                    </div>
-        
-                    <label for="category" class="form-label small mb-1">Report Category</label>
+                    <label for="category" class="form-label small mb-1">Report Category<span class="text-danger"> *</span></label>
                     <select class="form-select mb-3" id="category" name="category" required>
                         <option value="" selected disabled>-- Select Category --</option>
                         <option value="Fraud">Fraud</option>
@@ -90,16 +78,16 @@
                     <h5 class="text-primary border-bottom pb-2">Violation Details</h5>
                     <div class="row g-3">
                         <div class="col-md-6">
-                            <label for="suspect_name" class="form-label small mb-1">Suspect Name and Position</label>
+                            <label for="suspect_name" class="form-label small mb-1">Suspect Name and Position<span class="text-danger"> *</span></label>
                             <input type="text" class="form-control" id="suspect_name" name="suspect_name" required>
                         </div>
                         <div class="col-md-6">
-                            <label for="incident_date" class="form-label small mb-1">Incident Date</label>
+                            <label for="incident_date" class="form-label small mb-1">Incident Date<span class="text-danger"> *</span></label>
                             <input type="date" class="form-control" id="incident_date" name="incident_date" value="{{ now()->toDateString() }}" required>
                         </div>
                     </div>
                     <div class="mt-3">
-                        <label for="incident_location" class="form-label small mb-1">Incident Location</label>
+                        <label for="incident_location" class="form-label small mb-1">Incident Location<span class="text-danger"> *</span></label>
                         <input type="text" class="form-control" id="incident_location" name="incident_location" required>
                     </div>
                 </div>
@@ -107,7 +95,7 @@
                 <!-- Supporting Document -->
                 <div class="mb-4">
                     <h5 class="text-primary border-bottom pb-2">Supporting Information</h5>
-                    <small class="text-muted d-block mb-2">Upload documents (max 5 files, each max 5MB)</small>
+                    <small class="text-muted d-block mb-2">Upload documents (max 5 files, each max 1MB)</small>
                     <input 
                         type="file" 
                         class="form-control" 
@@ -170,63 +158,62 @@
 <script>
     const input = document.getElementById('supporting_document');
     const preview = document.getElementById('filePreview');
-    
-    input.addEventListener('change', function() {
+
+    input.addEventListener('change', function () {
         preview.innerHTML = '';
-    
+        const maxFiles = 5;
+        const maxFileSizeMB = 1;
+
         const files = Array.from(input.files);
-    
-        if (files.length > 5) {
-            preview.innerHTML = '<div class="text-danger">You can upload up to 5 files only.</div>';
+        const validFiles = [];
+
+        if (files.length > maxFiles) {
+            preview.innerHTML = `<div class="text-danger">You can upload up to ${maxFiles} files only.</div>`;
             input.value = '';
             return;
         }
-    
+
         files.forEach((file, index) => {
-            const sizeMB = (file.size / 1024 / 1024).toFixed(2);
-            if (sizeMB > 5) {
-                preview.innerHTML += `<div class="text-danger">${file.name} - ${sizeMB} MB (Too large!)</div>`;
-                return;
+            const sizeMB = file.size / 1024 / 1024;
+            if (sizeMB > maxFileSizeMB) {
+                const msg = `<div class="text-danger">${file.name} - ${(sizeMB).toFixed(2)} MB (Too large, max 1MB allowed)</div>`;
+                preview.innerHTML += msg;
+            } else {
+                validFiles.push(file);
             }
-    
+        });
+
+        if (validFiles.length !== files.length) {
+            input.value = ''; // Reset jika ada file tidak valid
+            return;
+        }
+
+        // If all files valid, preview them
+        validFiles.forEach((file, index) => {
+            const sizeMB = (file.size / 1024 / 1024).toFixed(2);
+
             const fileItem = document.createElement('div');
-            fileItem.className = 'file-item';
-    
-            const fileNameDiv = document.createElement('div');
-            fileNameDiv.className = 'file-name';
-    
+            fileItem.className = 'file-item mb-2 d-flex align-items-center gap-2';
+
             if (file.type.startsWith('image/')) {
                 const img = document.createElement('img');
-                img.className = 'file-thumb';
                 img.src = URL.createObjectURL(file);
-                fileNameDiv.appendChild(img);
+                img.className = 'file-thumb rounded';
+                img.style.width = '40px';
+                img.style.height = '40px';
+                img.style.objectFit = 'cover';
+                fileItem.appendChild(img);
             }
-    
-            const text = document.createElement('span');
-            text.innerText = `${file.name} (${sizeMB} MB)`;
-            fileNameDiv.appendChild(text);
-    
-            const removeLink = document.createElement('span');
-            removeLink.className = 'file-remove';
-            removeLink.innerText = 'Remove';
-            removeLink.onclick = () => {
-                files.splice(index, 1);
-                updateInput(files);
-            };
-    
-            fileItem.appendChild(fileNameDiv);
-            fileItem.appendChild(removeLink);
+
+            const fileInfo = document.createElement('span');
+            fileInfo.innerText = `${file.name} (${sizeMB} MB)`;
+            fileItem.appendChild(fileInfo);
+
             preview.appendChild(fileItem);
         });
     });
-    
-    function updateInput(newFiles) {
-        const dataTransfer = new DataTransfer();
-        newFiles.forEach(f => dataTransfer.items.add(f));
-        input.files = dataTransfer.files;
-        input.dispatchEvent(new Event('change'));
-    }
-    </script>
+</script>
+
     
     
 
