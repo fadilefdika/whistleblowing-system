@@ -1,56 +1,80 @@
 @extends('layouts.admin')
 
 @section('content')
-<div class="container pt-3 pb-4">
-    <h4 class="mb-2 fw-bold fs-5">Whistleblowing Reports</h4>
+    @if(session('success'))
+        <script>
+            Swal.fire({
+                icon: 'success',
+                title: 'Sukses',
+                html: `{!! session('success') !!}`,
+                timer: 2000,
+                timerProgressBar: true,
+                showConfirmButton: false
+            });
+        </script>
+    @endif
+    <div class="container pt-4 pb-5">
 
-    <div class="card shadow-sm border-0 rounded-4">
-        <div class="card-body">
-    
-            <div class="table-responsive">
-                <table id="reportsTable" class="table table-striped table-hover align-middle mb-0">
-                    <thead class="table-light">
-                        <tr>
-                            <th>#</th>
-                            <th>Report Number</th>
-                            <th>Status</th>
-                            <th>Category</th>
-                            <th>Created At</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                </table>
+        <!-- Heading -->
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+            <h4 class="fw-bold mb-0 fs-5 fs-md-4">
+                Whistleblowing Reports
+            </h4>
+            <a href="{{ route('admin.reports.export') }}" class="btn btn-success btn-sm btn-md">
+                <i class="fas fa-file-excel me-2"></i> Export to Excel
+            </a>
+        </div>        
+
+        <!-- Card Table -->
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-body p-4">
+
+                <div class="table-responsive">
+                    <table id="reportsTable" class="table table-striped small table-hover align-middle mb-0 w-100">
+                        <thead class="table-light">
+                            <tr class="small text-uppercase text-muted">
+                                <th class="text-nowrap">#</th>
+                                <th class="text-nowrap">Report Number</th>
+                                <th class="text-nowrap">Status</th>
+                                <th class="text-nowrap">Category</th>
+                                <th class="text-nowrap">Created At</th>
+                                <th class="text-nowrap text-center">Action</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Modal Detail -->
+    <div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content rounded-4 shadow">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-semibold" id="reportModalLabel">
+                        <i class="fas fa-info-circle me-2"></i> Report Detail
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body small text-muted">
+                    <div id="modalReportContent" class="text-center py-3">
+                        <i class="fas fa-spinner fa-spin"></i> Loading...
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-    
-</div>
-
-<!-- Modal -->
-<div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-scrollable">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="reportModalLabel">Report Detail</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <!-- Diisi lewat AJAX -->
-          <div id="modalReportContent" class="small text-muted text-center py-2">
-              <i class="fas fa-spinner fa-spin"></i> Loading...
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  
 @endsection
+
 
 @push('scripts')
 
 <script>
     $(document).ready(function () {
         $('#reportsTable').DataTable({
+            responsive: true,
             processing: true,
             serverSide: true,
             ajax: '{{ route('admin.reports.data') }}',

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\ReportsExport;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
@@ -9,6 +10,7 @@ use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Models\WhistleblowingReport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ReportController extends Controller
 {
@@ -30,8 +32,10 @@ class ReportController extends Controller
                 };
                 return '<span class="badge bg-' . $color . '">' . $report->status . '</span>';
             })
-            ->editColumn('created_at', function ($report) {
-                return Carbon::parse($report->created_at)->format('d M Y H:i');
+            ->editColumn('created_at', function ($row) {
+                return Carbon::parse($row->created_at)
+                    ->timezone('Asia/Jakarta') // Sesuaikan dengan zona waktu WIB
+                    ->translatedFormat('d F Y, H:i') . ' WIB';
             })
             ->addColumn('action', function ($report) {
                 return '<button 
@@ -47,15 +51,21 @@ class ReportController extends Controller
     public function show($id)
     {
         $report = WhistleblowingReport::findOrFail($id);
+
+        // Jika status awalnya masih 'Received', ubah jadi 'In Review'
+        if ($report->status === 'Received') {
+            $report->status = 'In Review';
+            $report->save();
+        }
+
         $badgeColor = match($report->status) {
             'Resolved' => 'success',
             'In Progress' => 'warning text-dark',
             default => 'secondary'
         };
-        
+
         return view('admin.partials.detail', compact('report', 'badgeColor'));
     }
-
 
 
     public function form(){
@@ -161,6 +171,20 @@ class ReportController extends Controller
     public function success($report_number)
     {
         return view('success', compact('report_number'));
+    }
+
+    public function export()
+    {
+        return Excel::download(new ReportsExport, 'whistleblowing_reports.xlsx');
+    }
+
+    public function close($id)
+    {
+        $report = WhistleblowingReport::findOrFail($id);
+        $report->status = 'Closed';
+        $report->save();
+
+        return back()->with('success', 'Report status updated to Closed.');
     }
 
 }

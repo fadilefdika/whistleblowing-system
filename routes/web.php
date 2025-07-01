@@ -1,7 +1,9 @@
 <?php
 
-use App\Http\Controllers\ReportController;
+use App\Http\Middleware\AdminAuth;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ReportController;
 
 Route::get('/', function () {
     return view('landingpage');
@@ -13,9 +15,23 @@ Route::get('/whistleblowing/trackresult', [ReportController::class, 'trackresult
 Route::post('/whistleblowing/track', [ReportController::class, 'store'])->name('whistleblowing.submit');
 Route::get('/whistleblowing/success/{report_number}', [ReportController::class, 'success'])->name('whistleblowing.success');
 
-// routes/web.php
-Route::get('/admin/reports', [ReportController::class, 'index'])->name('admin.reports.index');
-Route::get('/admin/reports/data', [ReportController::class, 'data'])->name('admin.reports.data');
-Route::get('/admin/reports/{id}', [ReportController::class, 'show'])->name('admin.reports.show');
 
+Route::get('/admin/login', function () {
+    return view('admin.login');
+})->name('admin.login');
+
+Route::post('/admin/login', [AuthController::class, 'login'])->name('admin.login.submit');
+Route::post('/admin/logout', [AuthController::class, 'logout'])->name('admin.logout');
+
+// Admin routes (dengan middleware admin.auth)
+Route::middleware(AdminAuth::class)->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+    Route::get('/reports/data', [ReportController::class, 'data'])->name('reports.data');
+    Route::get('/reports/export', [ReportController::class, 'export'])->name('reports.export');
+    Route::get('/reports/{id}', [ReportController::class, 'show'])->name('reports.show');
+    Route::put('/reports/{id}/close', [ReportController::class, 'close'])->name('reports.close');
+
+
+    
+});
 

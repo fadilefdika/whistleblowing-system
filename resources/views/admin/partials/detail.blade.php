@@ -66,6 +66,17 @@
             </div>
         </div>
     @endif
+    @if($report->status !== 'Closed')
+        <div class="d-flex justify-content-end mt-4">
+            <form action="{{ route('admin.reports.close', $report->id) }}" method="POST">
+                @csrf
+                @method('PUT')
+                <button type="submit" class="btn btn-outline-danger rounded-pill shadow-sm">
+                    <i class="fas fa-times-circle me-1"></i> Close Report
+                </button>
+            </form>
+        </div>
+    @endif
 </div>
 
 <style>
@@ -168,5 +179,9 @@
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+    }
+
+    .report-details-container {
+        padding-bottom: 2rem;
     }
 </style>

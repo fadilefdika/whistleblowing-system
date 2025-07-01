@@ -2,6 +2,12 @@
 
 @section('content')
 <div class="container py-4 py-md-5">
+    <!-- Tombol Admin Login -->
+    <a href="{{ route('admin.login') }}" 
+        class="btn btn-outline-primary fw-semibold position-absolute" 
+        style="top: 20px; right: 20px; z-index:1050; font-size: 0.85rem; padding: 0.375rem 0.75rem;">
+        <i class="fas fa-user-shield me-1"></i> Login as Admin
+    </a>
     <div class="card bg-white border-0 rounded-4 overflow-hidden shadow-lg" style="max-width: 840px; margin: 0 auto;">
         <div class="card-body p-4 p-md-5">
 

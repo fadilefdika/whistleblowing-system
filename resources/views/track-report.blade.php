@@ -110,14 +110,14 @@
                         </>
                     </div>
                 </div>
-            @elseif(isset($reportSearched))
+            @elseif(isset($reportSearched) && request()->has('report_number'))
                 <div class="alert alert-danger rounded-lg shadow-lg mt-4">
                     <div class="d-flex align-items-center">
                         <i class="fas fa-times-circle me-2"></i>
                         <span>Report not found. Please check the reference number.</span>
                     </div>
                 </div>
-            @endif
+            @endif            
         </div>
     </div>
 </div>
