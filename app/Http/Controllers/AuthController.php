@@ -5,41 +5,56 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Storage;
 
 class AuthController extends Controller
 {
     public function login(Request $request)
     {
-        $request->validate([
-            'npk' => 'required|string',
-            'password' => 'required|string',
-        ]);
+        $encryptedNpk = $request->input('encrypted_npk');
+        $encryptedPassword = $request->input('encrypted_password');
 
-        // Cari user berdasarkan NPK
-        $user = User::where('npk', $request->npk)->first();
+        // Ambil private key
+        $privateKeyPath = storage_path('app/keys/private.pem');
+        $privateKeyString = file_get_contents($privateKeyPath);
 
-        // Validasi user dan password
-        if (!$user || !Hash::check($request->password, $user->password_hash)) {
-            return back()->with('error', 'NPK atau password salah');
+        $privateKey = openssl_pkey_get_private($privateKeyString);
+
+        if (!$privateKey) {
+            Log::error('Private key tidak valid.');
+            return redirect()->back()->with('error', 'Server error: kunci tidak valid.');
         }
 
-        // Cek apakah user ini termasuk admin dari tabel admin_whistleblowing
-        $isAdmin = DB::table('admin_whistleblowing')->where('user_id', $user->id)->exists();
+        // Dekripsi NPK dan Password
+        $decryptionNpk = openssl_private_decrypt(base64_decode($encryptedNpk), $decryptedNpk, $privateKey);
+        $decryptionPassword = openssl_private_decrypt(base64_decode($encryptedPassword), $decryptedPassword, $privateKey);
 
-        if (!$isAdmin) {
-            return back()->with('error', 'Anda tidak memiliki akses sebagai admin');
+        if (!$decryptionNpk || !$decryptionPassword) {
+            return redirect()->back()->with('error', 'Gagal mendekripsi NPK atau Password.');
         }
 
-        // Simpan session login admin
-        Session::put('admin_logged_in', true);
-        Session::put('admin_id', $user->id);
-        Session::put('admin_name', $user->name);
+        // Ambil user
+        $user = User::where('npk', $decryptedNpk)->first();
+
+        if (!$user) {
+            return redirect()->back()->with('error', 'NPK tidak ditemukan.');
+        }
+
+        if (!Hash::check($decryptedPassword, $user->password_hash)) {
+            return redirect()->back()->with('error', 'Password salah.');
+        }
+
+        // Login
+        Auth::login($user);
 
         return redirect()->route('admin.reports.index');
     }
+
 
     public function logout(Request $request)
     {

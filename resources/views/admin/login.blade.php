@@ -44,6 +44,7 @@
                            class="form-control rounded-3 py-2 px-3" 
                            placeholder="Masukkan NPK"
                            required>
+                           <input type="hidden" name="encrypted_npk" id="encrypted_npk">
                 </div>
 
                 <div class="mb-4 position-relative">
@@ -57,7 +58,7 @@
                            class="form-control rounded-3 py-2 px-3 pe-5" 
                            placeholder="Masukkan password"
                            required>
-                
+                           <input type="hidden" name="encrypted_password" id="encrypted_password">
                     
                 </div>
                 
@@ -104,5 +105,40 @@
         toggleIcon.classList.toggle('fa-eye-slash');
     }
 </script>
+
+<script>
+    document.querySelector('form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const npkField = document.getElementById('npk');
+        const passwordField = document.getElementById('password');
+
+        const publicKey = `-----BEGIN PUBLIC KEY-----
+        MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEArK0mvGaJggF0LK1FdSsB
+        qFxta8VDo0UTLT6pGCUXnVpxwD38/cff599aWv2r7xlzq6W7r6TUsIL0gIp4EMY8
+        R10sL9bC4LPcYaMs/7D/b26jiW7mbeH47sVyZT6nWK96u32Mnlf/xFphJJnrOWiN
+        5g43Mupi5PTHlbBQpxvRZKg9DyCegEgjU9mJYKNJG6aO8bwMrIAyAeNtazBDglq3
+        rtI1/ImapmwGA8TmmcHzf7K8FN+X9ev4m+1wGI81QRV2Hgu887gh9hpyIuCyXuoZ
+        CW+vwMepMnlvN0ufR9xUBGmfb/HHAVQKcTh38cyKwB10Vvg80nCcPyD5iSPkfr+T
+        YQIDAQAB
+        -----END PUBLIC KEY-----`;
+
+        const encrypt = new JSEncrypt();
+        encrypt.setPublicKey(publicKey);
+
+        const encryptedNpk = encrypt.encrypt(npkField.value);
+        const encryptedPassword = encrypt.encrypt(passwordField.value);
+
+        // Isi ke hidden input
+        document.getElementById('encrypted_npk').value = encryptedNpk;
+        document.getElementById('encrypted_password').value = encryptedPassword;
+
+        // Kosongkan input yang terlihat
+        npkField.value = '';
+        passwordField.value = '';
+         // Submit ulang form secara manual
+         this.submit();
+    });
+</script>
+
 
 @endsection

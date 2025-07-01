@@ -11,6 +11,7 @@
     integrity="sha512-dIe7N3r3FEfBxEFU3gA3zUeW7a2eP4hU8+nXK8NnhDoH8Jd9n9hZgAsYB2+gkU+pQ5HKthkNQoj+2CgP8r1zKg=="
     crossorigin="anonymous" referrerpolicy="no-referrer" />
 
+    <script src="https://cdn.jsdelivr.net/npm/jsencrypt@3.0.0-rc.1/bin/jsencrypt.min.js"></script>
 
 </head>
 <body class="d-flex flex-column min-vh-100">
