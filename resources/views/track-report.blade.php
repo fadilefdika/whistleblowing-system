@@ -88,9 +88,12 @@
                             <div class="col-md-6">
                                 <div class="detail-item">
                                     <span class="detail-label">Submitted On:</span>
-                                    <span class="detail-value">{{ \Carbon\Carbon::parse($report->created_at)->format('d M Y, H:i') }}</span>
+                                    <span class="detail-value">
+                                        {{ \Carbon\Carbon::parse($report->created_at)->locale('id')->timezone('Asia/Jakarta')->isoFormat('D MMMM Y, HH:mm') }} WIB
+                                    </span>
                                 </div>
                             </div>
+                            
                             <div class="col-md-6">
                                 <div class="detail-item">
                                     <span class="detail-label">Last Updated:</span>
