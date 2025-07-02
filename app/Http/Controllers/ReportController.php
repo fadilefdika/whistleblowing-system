@@ -88,7 +88,6 @@ class ReportController extends Controller
     {
         $request->validate([
             'reporter_type' => 'required|in:employee,external',
-            'has_violation' => 'required|boolean',
             'category' => 'required|string|max:100',
             'case_description' => 'required|string',
             'suspect_name' => 'required|string|max:255',
@@ -126,7 +125,6 @@ class ReportController extends Controller
             WhistleblowingReport::create([
                 'report_number' => $reportNumber,
                 'reporter_type' => $request->reporter_type,
-                'has_violation' => $request->has_violation,
                 'category' => $request->category,
                 'case_description' => $request->case_description,
                 'suspect_name' => $request->suspect_name,

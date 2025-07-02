@@ -10,7 +10,6 @@ class WhistleblowingReport extends Model
     protected $fillable = [
         'report_number',
         'reporter_type',
-        'has_violation',
         'category',
         'case_description',
         'suspect_name',
