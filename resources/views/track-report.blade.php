@@ -71,7 +71,7 @@
                             <div class="col-md-6">
                                 <div class="detail-item">
                                     <span class="detail-label">Report Number:</span>
-                                    <span class="detail-value">{{ $report->number_report }}</span>
+                                    <span class="detail-value">{{ $report->report_number }}</span>
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -92,8 +92,7 @@
                                         {{ \Carbon\Carbon::parse($report->created_at)->locale('id')->timezone('Asia/Jakarta')->isoFormat('D MMMM Y, HH:mm') }} WIB
                                     </span>
                                 </div>
-                            </div>
-                            
+                            </div>                            
                             <div class="col-md-6">
                                 <div class="detail-item">
                                     <span class="detail-label">Last Updated:</span>
