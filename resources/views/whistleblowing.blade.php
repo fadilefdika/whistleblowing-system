@@ -82,7 +82,7 @@
                             <input type="text" class="form-control" id="suspect_name" name="suspect_name" required>
                         </div>
                         <div class="col-md-6">
-                            <label for="incident_date" class="form-label small mb-1">Incident Date<span class="text-danger"> *</span></label>
+                            <label for="incident_date" class="form-label small mb-1">Date of Reported Event<span class="text-danger"> *</span></label>
                             <input type="date" class="form-control" id="incident_date" name="incident_date" value="{{ now()->toDateString() }}" required>
                         </div>
                     </div>
@@ -218,22 +218,21 @@
     
 
 <script>
-    const incidentDate = document.getElementById('incident_date');
+    document.addEventListener('DOMContentLoaded', function () {
+        const incidentDate = document.getElementById('incident_date');
 
-    // Saat klik field, selalu coba tampilkan picker
-    incidentDate.addEventListener('click', function() {
-        if (this.showPicker) {
-            this.showPicker();
-        }
-    });
+        if (incidentDate && typeof incidentDate.showPicker === 'function') {
+            incidentDate.addEventListener('click', function () {
+                this.showPicker();
+            });
 
-    // Saat focus (misal tab key), tampilkan picker
-    incidentDate.addEventListener('focus', function() {
-        if (this.showPicker) {
-            this.showPicker();
+            incidentDate.addEventListener('focus', function () {
+                this.showPicker();
+            });
         }
     });
 </script>
+
 
 
 <script>
