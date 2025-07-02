@@ -154,7 +154,7 @@
 
 @endsection
 
-@section('scripts')
+@push('scripts')
 <script>
     const input = document.getElementById('supporting_document');
     const preview = document.getElementById('filePreview');
@@ -252,4 +252,4 @@
         });
     });
     </script>
-@endsection
+@endpush
