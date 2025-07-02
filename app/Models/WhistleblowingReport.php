@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class WhistleblowingReport extends Model
 {
-    protected $table = 'WhistleblowingReports'; // Sesuaikan dengan tabel SQL Server
+    protected $table = 'whistleblowing_reports'; // Sesuaikan dengan tabel SQL Server
     protected $fillable = [
         'report_number',
         'reporter_type',
