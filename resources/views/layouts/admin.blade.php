@@ -421,7 +421,7 @@
             }
 
             .layout-wrapper {
-                padding-bottom: 80px;
+                padding-bottom: 20px;
             }
     
             .sidebar-header {

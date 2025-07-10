@@ -16,7 +16,7 @@
     <div class="card border-0 shadow-lg rounded-4">
         <div class="card-header bg-white text-black text-center rounded-top-4">
             <img src="{{ asset('images/LOGO-AVI-OFFICIAL.png') }}" alt="Logo PT Astra Visteon Indonesia" class="my-3" style="max-height: 60px;">
-            <h2 class="mb-1">AVI - WHISTLE BLOWING SYSTEM</h2>
+            <h2 class="mb-1">AVI - WHISTLEBLOWING SYSTEM</h2>
             <p class="mb-0 small">PT Astra Visteon Indonesia</p>
         </div>     
         
@@ -68,7 +68,7 @@
                         <option value="Data Manipulation">Data Manipulation</option>
                     </select>
         
-                    <label for="case_description" class="form-label small mb-1">Describe the alleged violation in detail</label>
+                    <label for="case_description" class="form-label small mb-1">Describe the alleged violation in detail<span class="text-danger"> *</span></label>
                     <small class="text-muted d-block mb-2">Start with the case title. Describe the alleged violation, involved parties, department, time, and initial evidence.</small>
                     <textarea class="form-control" id="case_description" name="case_description" rows="5" required></textarea>
                 </div>
@@ -100,11 +100,12 @@
                         type="file" 
                         class="form-control" 
                         id="supporting_document" 
-                        name="supporting_document[]" 
-                        multiple 
                         accept=".jpg,.jpeg,.png,.pdf,.doc,.docx"
-                    >
+                    />
+
+                    <!-- Preview -->
                     <div id="filePreview" class="mt-2"></div>
+                    <input type="hidden" name="valid_files_count" id="valid_files_count" value="0">
                 </div>
                             
                 <!-- Declaration -->
@@ -158,43 +159,51 @@
 <script>
     const input = document.getElementById('supporting_document');
     const preview = document.getElementById('filePreview');
+    const maxFiles = 5;
+    const maxFileSizeMB = 1;
+    let fileList = [];
 
     input.addEventListener('change', function () {
-        preview.innerHTML = '';
-        const maxFiles = 5;
-        const maxFileSizeMB = 1;
+        const newFile = input.files[0]; // hanya satu file tiap kali
+        if (!newFile) return;
 
-        const files = Array.from(input.files);
-        const validFiles = [];
-
-        if (files.length > maxFiles) {
-            preview.innerHTML = `<div class="text-danger">You can upload up to ${maxFiles} files only.</div>`;
+        const totalFiles = fileList.length;
+        if (totalFiles >= maxFiles) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Maksimum Tercapai',
+                text: `Anda hanya dapat mengunggah maksimal ${maxFiles} file.`,
+            });
             input.value = '';
             return;
         }
 
-        files.forEach((file, index) => {
-            const sizeMB = file.size / 1024 / 1024;
-            if (sizeMB > maxFileSizeMB) {
-                const msg = `<div class="text-danger">${file.name} - ${(sizeMB).toFixed(2)} MB (Too large, max 1MB allowed)</div>`;
-                preview.innerHTML += msg;
-            } else {
-                validFiles.push(file);
-            }
-        });
-
-        if (validFiles.length !== files.length) {
-            input.value = ''; // Reset jika ada file tidak valid
+        const sizeMB = newFile.size / 1024 / 1024;
+        if (sizeMB > maxFileSizeMB) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Ukuran File Terlalu Besar',
+                text: `${newFile.name} berukuran ${sizeMB.toFixed(2)} MB. Maksimal hanya 1MB.`,
+            });
+            input.value = '';
             return;
         }
 
-        // If all files valid, preview them
-        validFiles.forEach((file, index) => {
-            const sizeMB = (file.size / 1024 / 1024).toFixed(2);
+        fileList.push(newFile);
+        renderPreviews();
 
+        // Kosongkan input agar bisa pilih file yang sama lagi kalau mau
+        input.value = '';
+    });
+
+    function renderPreviews() {
+        preview.innerHTML = '';
+        fileList.forEach((file, index) => {
+            const sizeMB = (file.size / 1024 / 1024).toFixed(2);
             const fileItem = document.createElement('div');
             fileItem.className = 'file-item mb-2 d-flex align-items-center gap-2';
 
+            // Preview image jika file gambar
             if (file.type.startsWith('image/')) {
                 const img = document.createElement('img');
                 img.src = URL.createObjectURL(file);
@@ -209,14 +218,84 @@
             fileInfo.innerText = `${file.name} (${sizeMB} MB)`;
             fileItem.appendChild(fileInfo);
 
+            const removeBtn = document.createElement('button');
+            removeBtn.innerHTML = '❌';
+            removeBtn.type = 'button';
+            removeBtn.className = 'btn btn-sm btn-outline-danger';
+            removeBtn.onclick = () => {
+                fileList.splice(index, 1);
+                renderPreviews();
+            };
+
+            fileItem.appendChild(removeBtn);
             preview.appendChild(fileItem);
         });
+
+        document.getElementById('valid_files_count').value = fileList.length;
+    }
+
+    // Optional: submit handler untuk gabungkan fileList jadi FormData
+    document.querySelector('form')?.addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        const form = e.target;
+        const formData = new FormData(form);
+
+        fileList.forEach((file) => {
+            formData.append('supporting_document[]', file);
+        });
+
+        fetch(form.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value,
+            }
+        })
+        .then(response => {
+            if (!response.ok) throw new Error("Upload gagal");
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                Swal.fire({
+                    title: 'Success!',
+                    text: 'Your report has been submitted successfully.',
+                    icon: 'success',
+                    timer: 1000, // waktu dalam milidetik (2000ms = 2 detik)
+                    showConfirmButton: false,
+                    timerProgressBar: true,
+                    didClose: () => {
+                        // Redirect setelah alert ditutup otomatis
+                        window.location.href = data.redirect;
+                    }
+                });
+            } else {
+                Swal.fire({
+                    title: 'Failed!',
+                    text: 'Upload gagal. Silakan coba lagi.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            }
+        })
+        .catch(err => {
+            Swal.fire({
+                title: 'Error!',
+                text: 'Terjadi kesalahan saat mengirim data.',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+            console.error(err);
+        });
     });
+
+
+
 </script>
 
-    
-    
 
+    
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const incidentDate = document.getElementById('incident_date');

@@ -30,8 +30,6 @@ Route::middleware(AdminAuth::class)->prefix('admin')->name('admin.')->group(func
     Route::get('/reports/export', [ReportController::class, 'export'])->name('reports.export');
     Route::get('/reports/{id}', [ReportController::class, 'show'])->name('reports.show');
     Route::put('/reports/{id}/close', [ReportController::class, 'close'])->name('reports.close');
-
-
     
 });
 

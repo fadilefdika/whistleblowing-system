@@ -1,7 +1,15 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container d-flex flex-column justify-content-center min-vh-100 py-5">
+<div class="container d-flex flex-column justify-content-center min-vh-100 py-3">
+
+    <!-- Tombol Admin Login (Responsive Posisi) -->
+    <div class="mb-3 text-md-end text-end">
+        <a href="{{ route('landingpage') }}" 
+           class="btn btn-primary fw-semibold" 
+           style="font-size: 0.85rem; padding: 0.375rem 0.75rem;"> Back to Home
+        </a>
+    </div>
 
     <!-- Logo -->
     <div class="text-center mb-4">

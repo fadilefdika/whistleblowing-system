@@ -1,13 +1,16 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container py-4 py-md-5">
-    <!-- Tombol Admin Login -->
-    <a href="{{ route('admin.login') }}" 
-        class="btn btn-outline-primary fw-semibold position-absolute" 
-        style="top: 20px; right: 20px; z-index:1050; font-size: 0.85rem; padding: 0.375rem 0.75rem;">
-        <i class="fas fa-user-shield me-1"></i> Login as Admin
-    </a>
+<div class="container pt-2 pb-4 pt-md-2 pb-md-5">
+    <!-- Tombol Admin Login (Responsive Posisi) -->
+    <div class="mb-3 text-md-end text-end">
+        <a href="{{ route('admin.login') }}" 
+           class="btn btn-primary fw-semibold" 
+           style="font-size: 0.85rem; padding: 0.375rem 0.75rem;">
+            <i class="fas fa-user-shield me-1"></i> Login as Admin
+        </a>
+    </div>
+
     <div class="card bg-white border-0 rounded-4 overflow-hidden shadow-lg" style="max-width: 840px; margin: 0 auto;">
         <div class="card-body p-4 p-md-5">
 
@@ -23,7 +26,6 @@
                 <h1 class="fw-bold mb-1" style="font-size: 2rem;">
                     Whistleblowing System
                 </h1>
-                {{-- <div class="mx-auto" style="width: 80px; height: 4px; background: linear-gradient(90deg, #0061f2, #5800c6); border-radius: 2px;"></div> --}}
             </div>
 
             <!-- Description -->
@@ -38,17 +40,16 @@
             <!-- Buttons -->
             <div class="d-flex flex-column flex-md-row justify-content-center gap-2 mt-3">
                 <a href="{{ route('whistleblowing.form') }}" 
-                class="btn btn-primary px-3 py-2 rounded-2 fw-medium shadow-sm"
-                style="min-width: 160px; font-size: 0.95rem; transition: all 0.2s;">
+                   class="btn btn-primary px-3 py-2 rounded-2 fw-medium shadow-sm"
+                   style="min-width: 160px; font-size: 0.95rem; transition: all 0.2s;">
                     <i class="fas fa-plus-circle me-1"></i> Submit Report
                 </a>
                 <a href="{{ route('whistleblowing.track') }}" 
-                class="btn btn-outline-primary px-3 py-2 rounded-2 fw-medium shadow-sm"
-                style="min-width: 160px; font-size: 0.95rem; transition: all 0.2s;">
+                   class="btn btn-outline-primary px-3 py-2 rounded-2 fw-medium shadow-sm"
+                   style="min-width: 160px; font-size: 0.95rem; transition: all 0.2s;">
                     <i class="fas fa-search me-1"></i> Track Report
                 </a>
             </div>
-
 
             <!-- Security info -->
             <div class="text-center mt-4">
@@ -59,5 +60,4 @@
         </div>
     </div>
 </div>
-
 @endsection

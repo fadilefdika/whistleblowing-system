@@ -86,6 +86,7 @@ class ReportController extends Controller
 
     public function store(Request $request)
     {
+        // dd($request->all());
         $request->validate([
             'reporter_type' => 'required|in:employee,external',
             'category' => 'required|string|max:100',
@@ -139,9 +140,11 @@ class ReportController extends Controller
 
             DB::commit();
 
-            return redirect()
-            ->route('whistleblowing.success', ['report_number' => $reportNumber])
-            ->with('success', 'Your report has been submitted successfully.');
+            return response()->json([
+                'success' => true,
+                'redirect' => route('whistleblowing.success', ['report_number' => $reportNumber]),
+                'message' => 'Your report has been submitted successfully.'
+            ]);
 
 
         } catch (\Exception $e) {
